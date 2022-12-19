@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts</title>
+<style type="text/css" >
+    .chartBox{
+        width: 700px;
+    }
+</style>
+</head>
+<body>
+    <div class="chartBox">
+        <canvas id="myChart"></canvas>
+      </div>
+
+<input type="file" id="uploadfile" accept=".csv"/>
+<button id="uploadconfirm">Upload File</button>
+<hr>
+<button onclick="updateChart(downloadData)">Show Downloads</button>
+<button onclick="updateChart(uploadData)">Show Uploads</button>
+<button onclick="updateChart(hostNameData)">Show Hostname</button>
+
+
+      <script src="https://www.jsdelivr.com/package/npm/chart.js?path=dist"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+      <script>
+        //one
+const data={
+    labels: ['Netflix', 'Skype-MicrosoftTeams', 'Hotstar', 'Other', 'Slack', 'Dropbox','AmazonPrime',
+    'Facebook-Instagram','AppleMusic','Whatsapp','Youtube',],
+            datasets: [{
+              label: '# of Votes',
+              data: [12, 19, 3, 5, 2, 3],
+              borderWidth: 1
+            }]
+};
+//two
+const config={
+    type: 'bar',
+          data,
+          options: {
+            scales: {
+              y: {
+                // min:100000000,
+                // max:130564498,
+                beginAtZero: false
+              }
+            }
+          }
+}
+//three
+const myChart=new Chart(
+    document.getElementById('myChart'),
+    config
+);
+
+//papa parse
+const hostNameData=[];
+const downloadData=[];
+const uploadData=[];
+
+
+const uploadconfirm=document.getElementById('uploadconfirm').addEventListener('click',()=>{
+    Papa.parse(document.getElementById('uploadfile').files[0],{
+        download:true,
+        header:true,
+        skipEmptyLines:true,
+        complete:function(results){
+            console.log(results);
+            console.log(results.data[0].hostName);
+            console.log(results.data.length)
+            for(i=0;i<results.data.length;i++){
+hostNameData.push(results.data[i].hostName);
+downloadData.push(results.data[i].download);
+uploadData.push(results.data[i].upload);
+
+            }
+            console.log(hostNameData);
+            console.log(downloadData);
+            console.log(uploadData);
+
+        }
+    })
+})
+
+
+function updateChart(label){
+myChart.data.datasets[0].label=label
+
+    if(label===hostNameData){
+myChart.data.datasets[0].data=hostNameData
+    }
+    if(label===downloadData){
+myChart.data.datasets[0].data=downloadData
+    }
+    if(label===uploadData){
+myChart.data.datasets[0].data=uploadData
+    }
+    // myChart.data.datasets[0].data=`${label}`
+console.log(label);
+myChart.update();
+}
+        
+      </script>
+      
+
+   
+
+</body>
+</html>
